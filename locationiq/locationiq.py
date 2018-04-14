@@ -133,13 +133,13 @@ class LocationIqRequest(object):
             return self.data
         except requests.exceptions.RequestException as err:
             # Concatenate the error code and the error message
-            return LocationIqError.factory(self.code, self.data['error'])
+            raise LocationIqError.factory(res.status_code)
         except requests.exceptions.HTTPError as errh:
-            return "Http Error:", errh
+            raise LocationIqError.factory(res.status_code, errh)
         except requests.exceptions.ConnectionError as errc:
-            return "Error Connecting:", errc
+            raise LocationIqError.factory(500, errc)
         except requests.exceptions.Timeout as errt:
-            return "Timeout Error:", errt
+            raise LocationIqError.factory(500, errt)
 
     def get(self, params: object = {}, headers: object = {}):
         """
@@ -163,31 +163,45 @@ class LocationIqError(Exception):
     """
 
     @staticmethod
-    def factory(err_code, err_message):
+    def factory(err_code, *wargs):
         """Create exceptions through a Factory based on the HTTP error code."""
         if err_code == 404:
             # No location or places were found for the given input
-            return LocationIqErrorMessage.display(err_code, "No location or places were found for the given input")
+            return LocationIqNoPlacesFound(err_code, *wargs)
         elif err_code == 401:
             # An invalid API key was provided
-            return LocationIqErrorMessage.display(err_code, "An invalid API key was provided")
+            return LocationIqInvalidKey(err_code, *wargs)
         elif err_code == 400:
             # Required parameters are missing, or invalid.
-            return LocationIqErrorMessage.display(err_code, "Required parameters are missing, or invalid.")
+            return LocationIqInvalidRequest(err_code, *wargs)
         elif err_code == 429:
             # Request exceeded the per-second / minute / day rate-limits set on your account
-            return LocationIqErrorMessage.display(err_code, "Request exceeded the per-second / minute / day rate-limits set on your account")
+            return LocationIqRequestLimitExeceeded(err_code, *wargs)
         else:
-            return LocationIqErrorMessage.display(err_code, err_message)
+            return LocationIqServerError(err_code, *wargs)
 
 
-class LocationIqErrorMessage(LocationIqError):
-    """
-    Prepare the error string to be returned to the user
-    :param error_code: Response code
-    :param err_message: Error message to be displayed
-    """
 
-    @staticmethod
-    def display(err_code, err_message):
-        return "Response Code %s: %s" % (err_code, err_message)
+class LocationIqNoPlacesFound(LocationIqError):
+    # No location or places were found for the given input
+    pass
+
+
+class LocationIqInvalidKey(LocationIqError):
+    # An invalid API key was provided or API key is not active
+    pass
+
+
+class LocationIqInvalidRequest(LocationIqError):
+    # Required parameters are missing, or invalid.
+    pass
+
+
+class LocationIqRequestLimitExeceeded(LocationIqError):
+    # Request exceeded the per-second / minute / day rate-limits set on your account
+    pass
+
+
+class LocationIqServerError(LocationIqError):
+    # This is an error on the server's side, we monitor this 24x7 and you should try again.
+    pass
