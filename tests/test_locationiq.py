@@ -1,7 +1,7 @@
 import unittest
-from locationiq.locationiq import LocationIq
-from locationiq.locationiq import LocationIqNoPlacesFound, LocationIqInvalidKey, LocationIqInvalidRequest
-from locationiq.locationiq import LocationIqRequestLimitExeceeded, LocationIqServerError
+from locationiq.geocoder import LocationIq
+from locationiq.geocoder import LocationIqNoPlacesFound, LocationIqInvalidKey, LocationIqInvalidRequest
+from locationiq.geocoder import LocationIqRequestLimitExeceeded, LocationIqServerError
 
 class LocationIqTestCase(unittest.TestCase):
     def test_no_api_key(self):

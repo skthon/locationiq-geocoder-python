@@ -133,7 +133,10 @@ class LocationIqRequest(object):
             return self.data
         except requests.exceptions.RequestException as err:
             # Concatenate the error code and the error message
-            raise LocationIqError.factory(res.status_code)
+            if res.status_code == 404:
+                raise LocationIqError.factory(res.status_code, "No location or places were found for the given input")
+            else:
+                raise LocationIqError.factory(res.status_code, self.data['error'])
         except requests.exceptions.HTTPError as errh:
             raise LocationIqError.factory(res.status_code, errh)
         except requests.exceptions.ConnectionError as errc:
