@@ -20,7 +20,7 @@ setup(
     author="saikiran ch",
     author_email="saikiranchavan@gmail.com",
     url='https://github.com/skthon/locationiq-geocoder-python',
-    packages=['locationiq'],
+    packages=find_packages(exclude=['tests']),
     license='Apache 2.0',
     platforms='Posix; MacOS X; Windows',
     setup_requires=requirements,
