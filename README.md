@@ -6,7 +6,7 @@ Usage
 -----
 LocationIQ python client library can be installed using pip:
    
-    $ pip install loationiq
+    $ pip install locationiq
 
 Load the locationiq geocoding module using the below line:
     
