@@ -10,7 +10,7 @@ import json
 from requests.exceptions import RequestException
 
 
-class LocationIq(object):
+class LocationIQ(object):
     """LocationIQ API client wrapper."""
 
     def __init__(self, key=None, format="json", addressdetails=1, limit=10, params={}, timeout=None, test_mode=False):
